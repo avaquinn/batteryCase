@@ -13,10 +13,12 @@ case_length = battery_length + padding_thickness*2 + thickness;
 case_height = battery_height + padding_thickness*2 + thickness;
 
 bolt_height = 24;
+bolt_diameter = 3;
 rounding_radius = 6;
 washer_diameter = rounding_radius*2;
 cylinder_height = bolt_height/2*1.5;
 bolt_cut_radius = washer_diameter/2;
+bolt_cut_replacement_radius = bolt_cut_radius + thickness;
 
 module battery() {
     cube([battery_width, battery_length, battery_height], center = true);
@@ -24,10 +26,12 @@ module battery() {
 }
 
 module bolt_cut() {
-    
     cylinder(cylinder_height, r = bolt_cut_radius);
 }    
 module bolt_cuts() { 
+    //FIGURE OUT WHAT MAKES SENSE
+    
+    
     translate([-case_width/2 + bolt_cut_radius - thickness,
                -case_length/2 + bolt_cut_radius - thickness,
                -cylinder_height]){
@@ -50,33 +54,33 @@ module bolt_cuts() {
     }
 }
 module bolt_cut_replacement() {
-    cylinder(cylinder_height, r = bolt_cut_radius + thickness);
+    cylinder(case_height / 2, r = bolt_cut_replacement_radius);
 }
+
 
 module bolt_cut_replacements() { 
     translate([-case_width/2 + bolt_cut_radius - thickness,
                -case_length/2 + bolt_cut_radius - thickness, 
-               -cylinder_height]){
+               -case_height/2]){
         bolt_cut_replacement();
     }
     translate([case_width/2 - bolt_cut_radius + thickness,
                -case_length/2 + bolt_cut_radius - thickness, 
-               -cylinder_height]){
+               -case_height/2]){
         bolt_cut_replacement();
     }
     translate([-case_width/2 + bolt_cut_radius - thickness,
                case_length/2 - bolt_cut_radius + thickness, 
-               -cylinder_height]){
+               -case_height/2]){
         bolt_cut_replacement();
     }
     translate([case_width/2 - bolt_cut_radius + thickness,
                case_length/2 - bolt_cut_radius + thickness, 
-               -cylinder_height]){
+               -case_height/2]){
         bolt_cut_replacement();
     }
     
 }
-
 module case_shape(width, length, height) {
     
     minkowski() {
@@ -88,7 +92,71 @@ module case_shape(width, length, height) {
     }
 }
 
+module bolt_holder() {
+    cylinder(thickness, r = bolt_cut_replacement_radius);
+    
+}
+
+module bolt_holders() {
+    translate([-case_width/2 + bolt_cut_radius - thickness,
+               -case_length/2 + bolt_cut_radius - thickness, 
+               -thickness]){
+        bolt_holder();
+    }
+    translate([case_width/2 - bolt_cut_radius + thickness,
+               -case_length/2 + bolt_cut_radius - thickness, 
+               -thickness]){
+        bolt_holder();
+    }
+    translate([-case_width/2 + bolt_cut_radius - thickness,
+               case_length/2 - bolt_cut_radius + thickness, 
+               -thickness]){
+        bolt_holder();
+    }
+    translate([case_width/2 - bolt_cut_radius + thickness,
+               case_length/2 - bolt_cut_radius + thickness, 
+               -thickness]){
+        bolt_holder();
+    }
+    
+}
+
+module bolt_hole() {
+    cylinder(thickness, d = bolt_diameter);
+}
+
+module bolt_holes() {
+    translate([-case_width/2 + bolt_cut_replacement_radius / 2,
+               -case_length/2 + bolt_cut_replacement_radius / 2, 
+               -thickness]){
+        bolt_hole();
+    }
+    translate([case_width/2 - bolt_cut_replacement_radius / 2,
+               -case_length/2 + bolt_cut_replacement_radius / 2, 
+               -thickness]){
+        bolt_hole();
+    }
+    translate([-case_width/2 + bolt_cut_replacement_radius / 2,
+               case_length/2 - bolt_cut_replacement_radius / 2, 
+               -thickness]){
+        bolt_hole();
+    }
+    translate([case_width/2 - bolt_cut_replacement_radius / 2,
+               case_length/2 - bolt_cut_replacement_radius / 2, 
+               -thickness]){
+        bolt_hole();
+    }
+    
+}
+
+
+
 module case() {
+    difference() {
+        bolt_holders();
+        bolt_holes();
+    }
+    
     difference() {
         bolt_cut_replacements();
         bolt_cuts();
@@ -131,3 +199,6 @@ module case_clean() {
 }
 
 case_clean();
+
+//bottom disk = width
+//top disk  = width*1.5
