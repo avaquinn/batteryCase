@@ -156,7 +156,6 @@ module case() {
         bolt_holders();
         bolt_holes();
     }
-    
     difference() {
         bolt_cut_replacements();
         bolt_cuts();
@@ -167,10 +166,9 @@ module case() {
                    case_length - thickness*2, 
                    case_height - thickness*2);
         bolt_cuts();
-        
     }
-    
 }
+
 
 module half_case() {
     delete_cube_side = battery_width*2;
