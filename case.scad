@@ -12,14 +12,28 @@ case_width = battery_width + padding_thickness*2 + thickness;
 case_length = battery_length + padding_thickness*2 + thickness;
 case_height = battery_height + padding_thickness*2 + thickness;
 
+bolt_height = 24;
+rounding_radius = 6;
+washer_diameter = rounding_radius*2;
+cylinder_height = bolt_height/2*1.5;
+bolt_cut_radius = washer_diameter/2;
+
 module battery() {
     cube([battery_width, battery_length, battery_height], center = true);
+    
+}
 
+module bolt_cut() {
+    
+    cylinder(cylinder_height, r = bolt_cut_radius);
+}    
+module bolt_cuts() { 
+    translate([-case_width/2 + bolt_cut_radius - thickness, -case_length/2 + bolt_cut_radius - thickness, -cylinder_height]){
+        bolt_cut();
+    }
 }
 
 module case_shape(width, length, height) {
-    
-    rounding_radius = 8;
     
     minkowski() {
         cube([width - rounding_radius*2, 
@@ -36,6 +50,7 @@ module case() {
         case_shape(case_width - thickness*2, 
                    case_length - thickness*2, 
                    case_height - thickness*2);
+        bolt_cuts();
     }
 }
 
