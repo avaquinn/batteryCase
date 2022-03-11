@@ -28,9 +28,53 @@ module bolt_cut() {
     cylinder(cylinder_height, r = bolt_cut_radius);
 }    
 module bolt_cuts() { 
-    translate([-case_width/2 + bolt_cut_radius - thickness, -case_length/2 + bolt_cut_radius - thickness, -cylinder_height]){
+    translate([-case_width/2 + bolt_cut_radius - thickness,
+               -case_length/2 + bolt_cut_radius - thickness,
+               -cylinder_height]){
         bolt_cut();
     }
+    translate([case_width/2 - bolt_cut_radius + thickness,
+               -case_length/2 + bolt_cut_radius - thickness,
+               -cylinder_height]){
+        bolt_cut();
+    }
+    translate([-case_width/2 + bolt_cut_radius - thickness,
+               case_length/2 - bolt_cut_radius + thickness,
+               -cylinder_height]){
+        bolt_cut();
+    }
+    translate([case_width/2 - bolt_cut_radius + thickness,
+               case_length/2 - bolt_cut_radius + thickness,
+               -cylinder_height]){
+        bolt_cut();
+    }
+}
+module bolt_cut_replacement() {
+    cylinder(cylinder_height, r = bolt_cut_radius + thickness);
+}
+
+module bolt_cut_replacements() { 
+    translate([-case_width/2 + bolt_cut_radius - thickness,
+               -case_length/2 + bolt_cut_radius - thickness, 
+               -cylinder_height]){
+        bolt_cut_replacement();
+    }
+    translate([case_width/2 - bolt_cut_radius + thickness,
+               -case_length/2 + bolt_cut_radius - thickness, 
+               -cylinder_height]){
+        bolt_cut_replacement();
+    }
+    translate([-case_width/2 + bolt_cut_radius - thickness,
+               case_length/2 - bolt_cut_radius + thickness, 
+               -cylinder_height]){
+        bolt_cut_replacement();
+    }
+    translate([case_width/2 - bolt_cut_radius + thickness,
+               case_length/2 - bolt_cut_radius + thickness, 
+               -cylinder_height]){
+        bolt_cut_replacement();
+    }
+    
 }
 
 module case_shape(width, length, height) {
@@ -46,12 +90,18 @@ module case_shape(width, length, height) {
 
 module case() {
     difference() {
+        bolt_cut_replacements();
+        bolt_cuts();
+    }
+    difference() {
         case_shape(case_width, case_length, case_height);
         case_shape(case_width - thickness*2, 
                    case_length - thickness*2, 
                    case_height - thickness*2);
         bolt_cuts();
+        
     }
+    
 }
 
 module half_case() {
@@ -64,4 +114,20 @@ module half_case() {
         }
     }
 }
-half_case();
+//half_case();
+
+module case_cleaner() {
+    difference(){
+        case_shape(case_width + thickness*5, case_length + thickness*5, case_height + thickness*5);
+        case_shape(case_width, case_length, case_height);
+    }
+}
+
+module case_clean() {
+    difference() {
+        half_case();
+        case_cleaner();
+    }
+}
+
+case_clean();
