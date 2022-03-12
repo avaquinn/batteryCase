@@ -6,7 +6,7 @@ battery_length = 48.0;
 
 padding_thickness = 6.5;
 
-thickness = 3;
+thickness = 2;
 
 case_width = battery_width + padding_thickness*2 + thickness;
 case_length = battery_length + padding_thickness*2 + thickness;
@@ -20,6 +20,27 @@ cylinder_height = bolt_height/2*1.5;
 bolt_cut_radius = washer_diameter/2;
 bolt_cut_replacement_radius = bolt_cut_radius + thickness;
 
+/*
+
+module build_four(x, y, z) {
+    translate([x, y, z]) {
+        bolt_cut();
+    }
+    translate([-x, y, z]) {
+        bolt_cut();
+    }
+    translate([x, -y, z]) {
+        bolt_cut();
+    }
+    translate([-x, -y, z]) {
+        bolt_cut();
+    }
+
+    
+}
+build_four(10, 40, 9);
+*/
+
 module battery() {
     cube([battery_width, battery_length, battery_height], center = true);
     
@@ -28,9 +49,9 @@ module battery() {
 module bolt_cut() {
     cylinder(cylinder_height, r = bolt_cut_radius);
 }    
+
 module bolt_cuts() { 
     //FIGURE OUT WHAT MAKES SENSE
-    
     
     translate([-case_width/2 + bolt_cut_radius - thickness,
                -case_length/2 + bolt_cut_radius - thickness,
@@ -81,6 +102,18 @@ module bolt_cut_replacements() {
     }
     
 }
+
+module test() {
+    translate([-case_width/2 + bolt_cut_radius,
+               -case_length/2 + bolt_cut_radius,
+               -thickness]){
+        cylinder(thickness, r = rounding_radius);
+    
+               }
+    
+}
+
+
 module case_shape(width, length, height) {
     
     minkowski() {
