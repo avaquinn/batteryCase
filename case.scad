@@ -92,7 +92,6 @@ module bolt_holders() {
     
 }
 
-
 module bolt_hole() {
     cylinder(thickness, d = bolt_diameter);
 }
@@ -107,7 +106,7 @@ module bolt_holes() {
 module case() {
     difference() {
         bolt_holders();
-        #bolt_holes();
+        bolt_holes();
     }
     difference() {
         bolt_cut_replacements();
@@ -133,7 +132,6 @@ module half_case() {
         }
     }
 }
-//half_case();
 
 module case_cleaner() {
     difference(){
@@ -150,6 +148,3 @@ module case_clean() {
 }
 
 case_clean();
-
-//bottom disk = width
-//top disk  = width*1.5
