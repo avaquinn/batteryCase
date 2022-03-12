@@ -48,16 +48,15 @@ module bolt_cut() {
     cylinder(cylinder_height, r = bolt_cut_radius);
 }    
 
-
 module bolt_cuts() {   
     build_four(case_width/2 - bolt_cut_radius + thickness, case_length/2 - bolt_cut_radius + thickness, -cylinder_height){
         bolt_cut();
     }
 }
+
 module bolt_cut_replacement() {
     cylinder(case_height / 2, r = bolt_cut_replacement_radius);
 }
-
 
 module bolt_cut_replacements(){
     build_four(case_width/2 - bolt_cut_radius + thickness, case_length/2 - bolt_cut_radius + thickness, -case_height/2){
@@ -65,16 +64,14 @@ module bolt_cut_replacements(){
     }
 }
 
-module test() {
+/*module test() {
     translate([-case_width/2 + bolt_cut_radius,
                -case_length/2 + bolt_cut_radius,
                -thickness]){
         cylinder(thickness, r = rounding_radius);
                }
-}
-
+}*/
 module case_shape(width, length, height) {
-    
     minkowski() {
         cube([width - rounding_radius*2, 
               length - rounding_radius*2, 
@@ -87,16 +84,6 @@ module case_shape(width, length, height) {
 module bolt_holder() {
     cylinder(thickness, r = bolt_cut_replacement_radius);
 }
-
-
-
-/*
-module bolt_cut_replacements(){
-    build_four(case_width/2 - bolt_cut_radius + thickness, case_length/2 - bolt_cut_radius + thickness, -case_height/2){
-        bolt_cut_replacement();
-    }
-}
-*/
 
 module bolt_holders() {
     build_four(case_width/2 - bolt_cut_radius + thickness, case_length/2 - bolt_cut_radius + thickness, -thickness) {
@@ -111,35 +98,16 @@ module bolt_hole() {
 }
 
 module bolt_holes() {
-    translate([-case_width/2 + bolt_cut_replacement_radius / 2,
-               -case_length/2 + bolt_cut_replacement_radius / 2, 
-               -thickness]){
-        bolt_hole();
-    }
-    translate([case_width/2 - bolt_cut_replacement_radius / 2,
-               -case_length/2 + bolt_cut_replacement_radius / 2, 
-               -thickness]){
-        bolt_hole();
-    }
-    translate([-case_width/2 + bolt_cut_replacement_radius / 2,
-               case_length/2 - bolt_cut_replacement_radius / 2, 
-               -thickness]){
-        bolt_hole();
-    }
-    translate([case_width/2 - bolt_cut_replacement_radius / 2,
-               case_length/2 - bolt_cut_replacement_radius / 2, 
-               -thickness]){
-        bolt_hole();
-    }
+    build_four(case_width/2 - bolt_cut_replacement_radius / 2,           case_length/2 - bolt_cut_replacement_radius / 2, 
+               -thickness) {
+                   bolt_hole();
+               }
     
 }
-
-
-
 module case() {
     difference() {
         bolt_holders();
-        bolt_holes();
+        #bolt_holes();
     }
     difference() {
         bolt_cut_replacements();
