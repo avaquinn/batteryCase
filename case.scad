@@ -20,26 +20,24 @@ cylinder_height = bolt_height/2*1.5;
 bolt_cut_radius = washer_diameter/2;
 bolt_cut_replacement_radius = bolt_cut_radius + thickness;
 
-/*
+
 
 module build_four(x, y, z) {
-    translate([x, y, z]) {
-        bolt_cut();
-    }
-    translate([-x, y, z]) {
-        bolt_cut();
-    }
-    translate([x, -y, z]) {
-        bolt_cut();
-    }
-    translate([-x, -y, z]) {
-        bolt_cut();
-    }
-
-    
+        translate([0, 0, z]) {
+            translate([x, y, 0]) {
+            children();
+            }
+            translate([-x, y, 0]) {
+                children();
+            }
+            translate([x, -y, 0]) {
+                children();
+            }
+            translate([-x, -y, 0]) {
+                children();
+            }      
+        }
 }
-build_four(10, 40, 9);
-*/
 
 module battery() {
     cube([battery_width, battery_length, battery_height], center = true);
@@ -49,6 +47,15 @@ module battery() {
 module bolt_cut() {
     cylinder(cylinder_height, r = bolt_cut_radius);
 }    
+
+
+module bolt_cuts_test() {   
+    build_four(case_width/2 - bolt_cut_radius + thickness, case_length/2 - bolt_cut_radius + thickness, -cylinder_height){
+        bolt_cut();
+    }
+}
+
+bolt_cuts_test();
 
 module bolt_cuts() { 
     //FIGURE OUT WHAT MAKES SENSE
@@ -74,6 +81,9 @@ module bolt_cuts() {
         bolt_cut();
     }
 }
+
+
+
 module bolt_cut_replacement() {
     cylinder(case_height / 2, r = bolt_cut_replacement_radius);
 }
@@ -191,7 +201,7 @@ module case() {
     }
     difference() {
         bolt_cut_replacements();
-        bolt_cuts();
+        #bolt_cuts();
     }
     difference() {
         case_shape(case_width, case_length, case_height);
