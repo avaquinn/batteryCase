@@ -4,7 +4,7 @@ battery_width = 95.8;
 battery_height = 76.0;
 battery_length = 39.0;
 
-padding_thickness = 6.5;
+padding_thickness = 3;
 
 thickness = 2;
 
@@ -15,20 +15,43 @@ case_height = battery_height + padding_thickness*2 + thickness;
 bolt_height = 24;
 bolt_diameter = 3;
 rounding_radius = 6;
-washer_diameter = 9;
+washer_diameter = 10;
+nut_radius = 2;
+nut_width = 2;
+
+bms_width = 20;
+bms_length = 15;
+bms_height = 5;
+
+wire_diameter = 2;
+wire_hole_diameter = wire_diameter * 1.1;
+
+vent_cylinder_diameter = 5;
+vent_width = vent_cylinder_diameter;
+vent_length = battery_width - thickness*4;
+
+
 cylinder_height = bolt_height/2*1.5;
 bolt_cut_radius = washer_diameter/2;
 bolt_cut_replacement_radius = bolt_cut_radius + thickness;
+bolt_holder_thickness = thickness*1.5;
+/*
+Metionable edits:
+- created nuts/bolts if statement
+- reduced padding thickness from 6.5 -> 3
+- made bolt holders 50% thicker, to allow for nut holes
+
+
+*/
+
 
 /*
 To do list:
 Reasonable bolt hole postion
 Add curve in bolt holder
 Add vents
-Decrease padding width - 1mm
 Increase bolt cut size 12+
 Add cutout for power cable
-Create bollean "bolt" or "nut"
 -Hexagonal bolt holders
 -Bolt side extra room + cable holder
 
@@ -88,11 +111,11 @@ module case_shape(width, length, height) {
 }
 
 module bolt_holder() {
-    cylinder(thickness, r = bolt_cut_replacement_radius);
+    cylinder(bolt_holder_thickness, r = bolt_cut_replacement_radius);
 }
 
 module bolt_holders() {
-    build_four(case_width/2 - bolt_cut_radius + thickness, case_length/2 - bolt_cut_radius + thickness, -thickness) {
+    build_four(case_width/2 - bolt_cut_radius + thickness, case_length/2 - bolt_cut_radius + thickness, -bolt_holder_thickness) {
         bolt_holder();
     }
     
@@ -152,4 +175,21 @@ module case_cleaned() {
     }
 }
 
-case_cleaned();
+//case_cleaned();
+
+
+module case_style(style){
+    if (style == "bolt") {
+        case_cleaned();
+    }
+    else if (style == "nut"){
+        translate([0, case_width, 0])
+        case_cleaned();
+    }
+    else {
+        sphere(r = 10);
+    }
+}
+case_style("nut");
+case_style("bolt");
+//case_style("pizza");
