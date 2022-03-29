@@ -20,9 +20,20 @@ cylinder_height = bolt_height/2*1.5;
 bolt_cut_radius = washer_diameter/2;
 bolt_cut_replacement_radius = bolt_cut_radius + thickness;
 
+/*
+To do list:
+Reasonable bolt hole postion
+Add curve in bolt holder
+Add vents
+Decrease padding width - 1mm
+Increase bolt cut size 12+
+Add cutout for power cable
+Create bollean "bolt" or "nut"
+-Hexagonal bolt holders
+-Bolt side extra room + cable holder
 
 
-//Add reasonable bolt hole postion, add curve in bolt holder, add vents
+*/
 
 module build_four(x, y, z) {
         translate([0, 0, z]) {
