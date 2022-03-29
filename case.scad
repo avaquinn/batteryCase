@@ -1,8 +1,8 @@
 $fn = 50;
 
-battery_width = 95.7;
-battery_height = 65.0;
-battery_length = 48.0;
+battery_width = 95.8;
+battery_height = 76.0;
+battery_length = 39.0;
 
 padding_thickness = 6.5;
 
@@ -15,12 +15,14 @@ case_height = battery_height + padding_thickness*2 + thickness;
 bolt_height = 24;
 bolt_diameter = 3;
 rounding_radius = 6;
-washer_diameter = rounding_radius*2;
+washer_diameter = 9;
 cylinder_height = bolt_height/2*1.5;
 bolt_cut_radius = washer_diameter/2;
 bolt_cut_replacement_radius = bolt_cut_radius + thickness;
 
 
+
+//Add reasonable bolt hole postion, add curve in bolt holder, add vents
 
 module build_four(x, y, z) {
         translate([0, 0, z]) {
@@ -64,13 +66,6 @@ module bolt_cut_replacements(){
     }
 }
 
-/*module test() {
-    translate([-case_width/2 + bolt_cut_radius,
-               -case_length/2 + bolt_cut_radius,
-               -thickness]){
-        cylinder(thickness, r = rounding_radius);
-               }
-}*/
 module case_shape(width, length, height) {
     minkowski() {
         cube([width - rounding_radius*2, 
@@ -100,8 +95,7 @@ module bolt_holes() {
     build_four(case_width/2 - bolt_cut_replacement_radius / 2,           case_length/2 - bolt_cut_replacement_radius / 2, 
                -thickness) {
                    bolt_hole();
-               }
-    
+               } 
 }
 module case() {
     difference() {
@@ -133,18 +127,18 @@ module half_case() {
     }
 }
 
-module case_cleaner() {
+module case_external() {
     difference(){
         case_shape(case_width + thickness*5, case_length + thickness*5, case_height + thickness*5);
         case_shape(case_width, case_length, case_height);
     }
 }
 
-module case_clean() {
+module case_cleaned() {
     difference() {
         half_case();
-        case_cleaner();
+        case_external();
     }
 }
 
-case_clean();
+case_cleaned();
