@@ -50,12 +50,6 @@ To do list:
 Reasonable bolt hole postion
 Add curve in bolt holder
 Add vents
-Increase bolt cut size 12+
-Add cutout for power cable
--Hexagonal bolt holders
--Bolt side extra room + cable holder
-
-
 */
 
 module build_four(x, y, z) {
@@ -131,6 +125,21 @@ module bolt_holes() {
                    bolt_hole();
                } 
 }
+module vent(){
+    translate([battery_width/2, 0, 0]){
+        cylinder(h = thickness, d = vent_width);
+    }
+    
+    translate([-battery_width/2, 0, 0]){
+        cylinder(h = thickness, d = vent_width);
+    }
+}
+
+module vents(){
+    vent();
+}
+//vents();
+
 module case() {
     difference() {
         bolt_holders();
@@ -146,10 +155,9 @@ module case() {
                    case_length - thickness*2, 
                    case_height - thickness*2);
         bolt_cuts();
+        vents();
     }
 }
-
-
 module half_case() {
     delete_cube_side = battery_width*2;
     
@@ -181,10 +189,25 @@ module case_cleaned() {
 module case_style(style){
     if (style == "bolt") {
         case_cleaned();
+        /*
+        Stuff to add:
+        - wire cable hole
+        - switch cutout
+        - form fit for BMS
+        
+        */
+        
     }
     else if (style == "nut"){
         translate([0, case_width, 0])
         case_cleaned();
+        /*
+        Stuff to add:
+        - hexagonal bolt cutouts
+        - adjustment vector
+        
+        */
+        
     }
     else {
         sphere(r = 10);
@@ -193,3 +216,12 @@ module case_style(style){
 case_style("nut");
 case_style("bolt");
 //case_style("pizza");
+
+module hexagon(x, y, z)
+{
+    $fn = 6;
+    translate([x, y, z])
+        #cylinder(nut_width, r = nut_radius);
+}
+
+hexagon(0, 0, 0);
