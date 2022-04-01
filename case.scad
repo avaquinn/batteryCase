@@ -16,7 +16,7 @@ bolt_height = 24;
 bolt_diameter = 3;
 rounding_radius = 6;
 washer_diameter = 10;
-nut_radius = 2;
+nut_radius = 2.5;
 nut_width = 2;
 
 bms_width = 20;
@@ -28,7 +28,9 @@ wire_hole_diameter = wire_diameter * 1.1;
 
 vent_cylinder_diameter = 5;
 vent_width = vent_cylinder_diameter;
-vent_length = battery_width - thickness*4;
+vent_length = battery_width *7/8;
+vent_spacing = battery_length /4;
+vent_height = case_height/2;
 
 
 cylinder_height = bolt_height/2*1.5;
@@ -126,19 +128,35 @@ module bolt_holes() {
                } 
 }
 module vent(){
-    translate([battery_width/2, 0, 0]){
-        cylinder(h = thickness, d = vent_width);
+    
+    hull() {
+        translate([vent_length/2, 0, 0]){
+            cylinder(h = thickness*2, d = vent_width);
+        }
+    
+        translate([-vent_length/2, 0, 0]){
+            cylinder(h = thickness*2, d = vent_width);
+        }
+        
     }
     
-    translate([-battery_width/2, 0, 0]){
-        cylinder(h = thickness, d = vent_width);
-    }
 }
 
 module vents(){
-    vent();
+    translate([0, -vent_spacing *1.5, -vent_height]){
+        for (i=[0:3]){
+            translate([0,i*vent_spacing,0]){
+                #vent();
+                
+            }
+        }
+        
+    }
+    
 }
-//vents();
+
+
+
 
 module case() {
     difference() {
@@ -183,12 +201,33 @@ module case_cleaned() {
     }
 }
 
+module hexagon(x, y, z)
+{
+    $fn = 6;
+    
+    cylinder(nut_width, r = nut_radius);
+}
+
+module hexagons(){
+    build_four(case_width/2 - bolt_cut_replacement_radius / 2,           case_length/2 - bolt_cut_replacement_radius / 2, 
+               -thickness*2) {
+                   hexagon();
+               } 
+}
+
+
+
+
 //case_cleaned();
 
 
 module case_style(style){
-    if (style == "bolt") {
-        case_cleaned();
+    if (style == "nut") {
+        difference(){
+            case_cleaned();
+            hexagons();
+        }
+        
         /*
         Stuff to add:
         - wire cable hole
@@ -198,7 +237,7 @@ module case_style(style){
         */
         
     }
-    else if (style == "nut"){
+    else if (style == "bolt"){
         translate([0, case_width, 0])
         case_cleaned();
         /*
@@ -217,11 +256,4 @@ case_style("nut");
 case_style("bolt");
 //case_style("pizza");
 
-module hexagon(x, y, z)
-{
-    $fn = 6;
-    translate([x, y, z])
-        #cylinder(nut_width, r = nut_radius);
-}
 
-hexagon(0, 0, 0);
