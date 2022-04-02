@@ -10,7 +10,7 @@ thickness = 2;
 
 case_width = battery_width + padding_thickness*2 + thickness;
 case_length = battery_length + padding_thickness*2 + thickness;
-//case_height = battery_height + padding_thickness*2 + thickness;
+complete_case_height = battery_height + padding_thickness*2 + thickness;
 
 bolt_height = 24;
 bolt_diameter = 3;
@@ -222,7 +222,7 @@ module hexagons(){
 
 module styled_case(style){
     if (style == "main") {
-        case_height = battery_height + padding_thickness*2 + thickness;  
+        case_height = complete_case_height * 2/3;  
         
         difference(){
             case_cleaned(case_height);
@@ -230,7 +230,7 @@ module styled_case(style){
         }
     }
     else if (style == "lid"){
-        case_height = 50;
+        case_height = complete_case_height * 1/3;
         translate([0, case_width, 0])
         case_cleaned(case_height);
         
