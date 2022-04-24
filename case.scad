@@ -169,7 +169,36 @@ module vents(){
         }
     }
 }
+module build_corner(h){
+    difference(){
+        bolt_cut_replacement(h);
+        bolt_cut();
+        cube(30);
+    }
+    
+    translate([0,0,h/4]){
+        difference(){
+            bolt_holder();
+            bolt_hole();
+        }
+    }
+      
+    //if (style == "main") {}
+}
+module build_corners(h){
+    build_four(20,20,0){
+        build_corner(h);
+        
+    }
+    
+    
+}
 
+
+
+translate([0, -80, -0]) build_corners(50);
+
+    
 module case(case_height) {
     difference() {
         bolt_holders();
