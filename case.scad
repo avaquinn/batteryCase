@@ -149,6 +149,21 @@ module vents(case_height){
 }
 
 
+module hole_vents(case_height){
+    hole_radius = 2;
+    hole_spacing = hole_radius * 3; 
+    translate([0, 0, - case_height/2 + 0.5*thickness]){
+        for (y_postion = [0 : hole_spacing : 4 * hole_spacing]){
+            for (x_postion = [0 : hole_spacing : 4 * hole_spacing]){
+                translate([x_postion, y_postion, 0]){
+                    #cylinder(thickness * fiddle/2, r = hole_radius, center = true);
+                
+                }   
+            }
+        }
+    } 
+}
+
 
 module build_corner(h, style){
     if (style == "main") {
@@ -208,7 +223,11 @@ module case(case_height, style) {
                    external_case_length - thickness*2, 
                    case_height - thickness*2);
         if (style == "lid"){
-            vents(case_height);   
+            //vents(case_height); 
+            translate(0,0,0){
+                hole_vents(case_height);
+                
+            }
         }
         build_four(external_case_width/2 - corner_shift, external_case_length/2 - corner_shift, -case_height/4){
             bolt_cut_replacement(case_height);
