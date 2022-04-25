@@ -29,8 +29,8 @@ bolt_cut_replacement_radius = bolt_cut_radius + thickness;
 bolt_holder_thickness = thickness*1.5;
 
 
-external_case_width = battery_width + thickness * 2 + (bolt_cut_radius + thickness*2) * 2^(1/2);
-external_case_length = battery_length + thickness * 2 + 2^(1/2) * (bolt_cut_radius + thickness*2);
+external_case_width = battery_width + thickness * 2 + (bolt_cut_replacement_radius*2) * 2^(1/2);
+external_case_length = battery_length + thickness * 2 + 2^(1/2) * (bolt_cut_replacement_radius*2);
 
 //
 complete_case_height = battery_height + padding_thickness*2 + thickness;
@@ -49,23 +49,13 @@ vent_length = battery_width *1/4;
 vent_spacing = battery_length /8;
 vent_height = 20;
 
-
-/*
-Metionable edits:
-- created nuts/bolts if statement
-- reduced padding thickness from 6.5 -> 3
-- made bolt holders 50% thicker, to allow for nut holes
-- added vents, moved vents
-- changed case_height from a global varible to a specific varible
-- changed how the case size is calculated
-
-*/
+corner_shift = rounding_radius;
 
 
-/*
+/* Stuff to do:
+- Change battery height
+- Spilt halves
 
-Reasonable bolt hole postion
-Add curve in bolt holder
 */
 
 module build_four(x, y, z) {
@@ -91,16 +81,25 @@ module battery() {
 }
 //#battery();
 
-module bolt_cut() {
+module bolt_cut(h, style) {
     //$fn = 6;
     //cylinder(cylinder_height , r = bolt_cut_radius);
-    cylinder(cylinder_height, r = nut_radius, center = true);
-    
+    if (style == "main") {
+        $fn = 6;
+        cylinder(h/2, r = nut_radius, center = true);
+    }
+    else if (style == "lid"){
+        
+        cylinder(h/2, r = washer_diameter/2, center = true);
+    }
+    else {
+        cylinder(h/2, r = nut_radius, center = true);
+    }
 }    
 
 
-module bolt_cut_replacement(case_height) {
-    cylinder(case_height / 2, r = bolt_cut_replacement_radius, center = true);
+module bolt_cut_replacement(h) {
+    cylinder(h / 2, r = bolt_cut_replacement_radius, center = true);
 }
 
 module case_shape(width, length, height) {
@@ -139,8 +138,8 @@ module vent(){
     
 }
 
-module vents(){
-    translate([-vent_length*1, -vent_spacing*3.25, -vent_height]){
+module vents(case_height){
+    translate([-vent_length*1, -vent_spacing*3.25, -case_height/2 +thickness]){
         for (y_postion=[0:3]){
             translate([0,y_postion*vent_spacing,0]){
                 vent();
@@ -148,12 +147,35 @@ module vents(){
         }
     }
 }
-module build_corner(h){
-    difference(){
-        bolt_cut_replacement(h);
-        bolt_cut();
+
+
+
+module build_corner(h, style){
+    if (style == "main") {
+        difference(){
+            bolt_cut_replacement(h);
+            union(){
+                bolt_cut(h, style);
+                
+            }
+            
+        }
     }
-    
+    else if (style == "lid"){
+         difference(){
+            bolt_cut_replacement(h);
+            bolt_cut(h, style);
+        }
+        
+    }
+    else {
+        difference(){
+            bolt_cut_replacement(h);
+            bolt_cut(h, style);
+        }
+        
+    }
+     
     translate([0,0,h/4 - bolt_holder_thickness /2]){
         difference(){
             bolt_holder();
@@ -164,48 +186,48 @@ module build_corner(h){
 }
 
 
-module build_corners(h){
-    corner_shift = thickness * 3;
-    
-    
+module build_corners(h, style){
     build_four(external_case_width/2 - corner_shift, external_case_length/2 - corner_shift, -h/4){
-        translate([0,0,0]) build_corner(h);
+        translate([0,0,0]) build_corner(h, style);
         
     }
 }
     
-module case(case_height) {
+module case(case_height, style) {
     /*difference() {
         bolt_holders();
         bolt_holes();
     }
     difference() {
         bolt_cut_replacements(case_height);
-        bolt_cuts();
+        bolt_cuts(case_height);
     }*/
     difference() {
         case_shape(external_case_width, external_case_length, case_height);
         case_shape(external_case_width - thickness*2, 
                    external_case_length - thickness*2, 
                    case_height - thickness*2);
-        vents();
-        
-        build_four(external_case_width/2 - thickness*2, external_case_length/2 - thickness*2, -case_height/4){
+        if (style == "lid"){
+            vents(case_height);   
+        }
+        build_four(external_case_width/2 - corner_shift, external_case_length/2 - corner_shift, -case_height/4){
             bolt_cut_replacement(case_height);
             
         }
         
     }
     
-    build_corners(case_height);
+    
+    
+    build_corners(case_height, style);
         
 }
 
-module half_case(case_height) {
+module half_case(case_height, style) {
     delete_cube_side = battery_width*2;
     
     difference() {
-        case(case_height);
+        case(case_height, style);
         translate([-delete_cube_side/2, -delete_cube_side / 2, 0]) {
             cube(delete_cube_side);
         }
@@ -221,9 +243,9 @@ module case_external(case_height) {
 
 
 
-module case_cleaned(case_height) {
+module case_cleaned(case_height, style) {
     difference() {
-        half_case(case_height);
+        half_case(case_height, style);
         case_external(case_height);
     }
 }
@@ -249,14 +271,14 @@ module styled_case(style){
         case_height = complete_case_height * 2/3;  
         
         difference(){
-            case_cleaned(case_height);
+            case_cleaned(case_height, style);
             //hexagons();
         }
     }
     else if (style == "lid"){
         case_height = complete_case_height * 1/3;
         translate([0, external_case_width, 0])
-        case_cleaned(case_height);
+        case_cleaned(case_height, style);
         
         /*
         Stuff to add:
@@ -269,7 +291,7 @@ module styled_case(style){
     }
     else {
         case_height = complete_case_height * 1/2;
-        case_cleaned(case_height);
+        case_cleaned(case_height, style);
     }
     
 }
