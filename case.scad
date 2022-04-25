@@ -17,7 +17,8 @@ thickness = 2;
 bolt_height = 22;
 bolt_diameter = 3.5;
 rounding_radius = 6;
-washer_diameter = 10;
+washer_diameter = 8;
+//^measured as 10
 nut_radius = 4;
 nut_width = 5;
 
@@ -91,26 +92,15 @@ module battery() {
 //#battery();
 
 module bolt_cut() {
-    $fn = 6;
+    //$fn = 6;
     //cylinder(cylinder_height , r = bolt_cut_radius);
     cylinder(cylinder_height, r = nut_radius, center = true);
     
 }    
 
-module bolt_cuts() {   
-    build_four(external_case_width/2 - bolt_cut_radius + thickness, external_case_length/2 - bolt_cut_radius + thickness, -cylinder_height/2){
-        bolt_cut();
-    }
-}
 
 module bolt_cut_replacement(case_height) {
     cylinder(case_height / 2, r = bolt_cut_replacement_radius, center = true);
-}
-
-module bolt_cut_replacements(case_height){
-    build_four(external_case_width/2 - bolt_cut_radius + thickness, external_case_length/2 - bolt_cut_radius + thickness, -case_height/4){
-        bolt_cut_replacement(case_height);
-    }
 }
 
 module case_shape(width, length, height) {
@@ -127,24 +117,13 @@ module bolt_holder() {
     cylinder(bolt_holder_thickness, r = bolt_cut_replacement_radius, center = true);
 }
 
-module bolt_holders() {
-    build_four(external_case_width/2 - bolt_cut_radius + thickness, external_case_length/2 - bolt_cut_radius + thickness, -bolt_holder_thickness/2) {
-        bolt_holder();
-    }
-    
-}
 
 module bolt_hole() {
     
-    cylinder(bolt_holder_thickness, d = bolt_diameter, center = true);
+    cylinder(bolt_holder_thickness * fiddle, d = bolt_diameter, center = true);
 }
 
-module bolt_holes() {
-    build_four(external_case_width/2,           external_case_length/2, 
-               -bolt_holder_thickness/2) {
-                   bolt_hole();
-               } 
-}
+
 module vent(){
     
     hull() {
@@ -173,49 +152,53 @@ module build_corner(h){
     difference(){
         bolt_cut_replacement(h);
         bolt_cut();
-        cube(30);
     }
     
-    translate([0,0,h/4]){
+    translate([0,0,h/4 - bolt_holder_thickness /2]){
         difference(){
             bolt_holder();
             bolt_hole();
         }
-    }
-      
+    } 
     //if (style == "main") {}
 }
+
+
 module build_corners(h){
-    build_four(20,20,0){
-        build_corner(h);
+    corner_shift = thickness * 3;
+    
+    
+    build_four(external_case_width/2 - corner_shift, external_case_length/2 - corner_shift, -h/4){
+        translate([0,0,0]) build_corner(h);
         
     }
-    
-    
 }
-
-
-
-translate([0, -80, -0]) build_corners(50);
-
     
 module case(case_height) {
-    difference() {
+    /*difference() {
         bolt_holders();
         bolt_holes();
     }
     difference() {
         bolt_cut_replacements(case_height);
         bolt_cuts();
-    }
+    }*/
     difference() {
         case_shape(external_case_width, external_case_length, case_height);
         case_shape(external_case_width - thickness*2, 
                    external_case_length - thickness*2, 
                    case_height - thickness*2);
-        bolt_cuts();
         vents();
+        
+        build_four(external_case_width/2 - thickness*2, external_case_length/2 - thickness*2, -case_height/4){
+            bolt_cut_replacement(case_height);
+            
+        }
+        
     }
+    
+    build_corners(case_height);
+        
 }
 
 module half_case(case_height) {
@@ -249,7 +232,7 @@ module case_cleaned(case_height) {
 
 module hexagon(x, y, z)
 {
-    $fn = 6;
+    //$fn = 6;
     cylinder(nut_width, r = nut_radius, center = true);
 }
 
