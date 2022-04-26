@@ -1,3 +1,5 @@
+//CASE VERSION 2
+
 $fn = 20;
 
 fiddle = 3;
@@ -15,17 +17,21 @@ thickness = 2;
 
 
 bolt_height = 22;
-bolt_diameter = 3.5;
-rounding_radius = 6;
+bolt_diameter = 4.5;
+//rounding_radius = 6;
+rounding_radius = 8;
+
 washer_diameter = 8;
 //^measured as 10
-nut_radius = 4;
+nut_radius = 5;
 nut_width = 5;
 
 
 cylinder_height = bolt_height;
 bolt_cut_radius = washer_diameter/2;
-bolt_cut_replacement_radius = bolt_cut_radius + thickness;
+bolt_cut_replacement_radius = rounding_radius;
+//^ bolt_cut_replacement_radius = bolt_cut_radius + thickness;
+
 bolt_holder_thickness = thickness*1.5;
 
 
@@ -156,7 +162,7 @@ module hole_vents(case_height){
         for (y_postion = [0 : hole_spacing : 4 * hole_spacing]){
             for (x_postion = [0 : hole_spacing : 4 * hole_spacing]){
                 translate([x_postion, y_postion, 0]){
-                    #cylinder(thickness * fiddle/2, r = hole_radius, center = true);
+                    cylinder(thickness * fiddle/2, r = hole_radius, center = true);
                 
                 }   
             }
@@ -224,7 +230,9 @@ module case(case_height, style) {
                    case_height - thickness*2);
         if (style == "lid"){
             //vents(case_height); 
-            translate(0,0,0){
+            
+            //kludge, fix
+            translate([0,-5,0]){
                 hole_vents(case_height);
                 
             }
@@ -296,7 +304,7 @@ module styled_case(style){
     }
     else if (style == "lid"){
         case_height = complete_case_height * 1/3;
-        translate([0, external_case_width, 0])
+        translate([0, external_case_width/1.6, -complete_case_height * 1/6])
         case_cleaned(case_height, style);
         
         /*
@@ -315,10 +323,14 @@ module styled_case(style){
     
 }
 //Done
+difference(){
+    translate([0, 0, complete_case_height/3]){
+        styled_case("main");
+    //styled_case("lid");
+        
+    }
+    rotate([0,0,45]) translate([30,0,0]) cube(140, center = true);
+}
 
-
-styled_case("main");
-styled_case("lid");
 //styled_case("pizza");
-
 
