@@ -1,4 +1,4 @@
-//CASE VERSION 3
+//CASE VERSION 4
 
 $fn = 20;
 
@@ -23,7 +23,7 @@ rounding_radius = 8;
 
 washer_diameter = 8;
 //^measured as 10
-nut_radius = 4.5;
+nut_radius = 5;
 nut_width = 5;
 
 
