@@ -1,6 +1,6 @@
-//CASE VERSION 4
+//CASE VERSION 5
 
-$fn = 20;
+$fn = 60;
 
 fiddle = 3;
 
@@ -67,7 +67,7 @@ corner_shift = rounding_radius;
 module build_four(x, y, z) {
         translate([0, 0, z]) {
             translate([x, y, 0]) {
-            children();
+                children();
             }
             translate([-x, y, 0]) {
                 children();
@@ -78,6 +78,31 @@ module build_four(x, y, z) {
             translate([-x, -y, 0]) {
                 children();
             }      
+        }
+}
+
+module build_four_rotate(x, y, z) {
+        translate([0, 0, z]) {
+            translate([x, y, 0]) {
+                rotate([0,0,0]){
+                    children();
+                }
+            }
+            translate([-x, y, 0]) {
+                rotate([0,0,90]){
+                    children();
+                }
+            }
+            translate([-x, -y, 0]) {
+                rotate([0,0,180]){
+                    children();
+                }
+            }  
+            translate([x, -y, 0]) {
+                rotate([0,0,270]){
+                    children();
+                }
+            }  
         }
 }
 
@@ -175,12 +200,17 @@ module build_corner(h, style){
     if (style == "main") {
         difference(){
             bolt_cut_replacement(h);
-            union(){
-                bolt_cut(h, style);
-                
+            translate([0,0,h/16]){
+                hull(){
+                    bolt_cut(h/4, style);
+                    translate([rounding_radius, rounding_radius, 0]){
+                        bolt_cut(h/4, style);
+                    }
+                }
             }
-            
+            translate([0,0,h/8])bolt_cut(h/2, style);
         }
+        
     }
     else if (style == "lid"){
          difference(){
@@ -208,7 +238,7 @@ module build_corner(h, style){
 
 
 module build_corners(h, style){
-    build_four(external_case_width/2 - corner_shift, external_case_length/2 - corner_shift, -h/4){
+    build_four_rotate(external_case_width/2 - corner_shift, external_case_length/2 - corner_shift, -h/4){
         translate([0,0,0]) build_corner(h, style);
         
     }
