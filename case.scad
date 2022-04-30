@@ -1,4 +1,4 @@
-//CASE VERSION 6
+//CASE VERSION 7
 
 $fn = 60;
 
@@ -205,17 +205,12 @@ module build_corner(h, style){
     if (style == "main") {
         difference(){
             bolt_cut_replacement(h);
-            translate([0,0,0]){
-                hull(){
-                    bolt_cut(h/2, style);
-                    translate([rounding_radius, rounding_radius, 0]){
-                        bolt_cut(h/2, style = "main_cutout");
-                    }
-                }
-            }
             translate([0,0,h/8])bolt_cut(h/2, style);
+            translate([rounding_radius, rounding_radius, h/16]){
+                rotate([0,0,45]) cube([rounding_radius*2, rounding_radius*2, h/8], center = true);
+            }
+            
         }
-        
     }
     else if (style == "lid"){
          difference(){
