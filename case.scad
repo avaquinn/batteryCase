@@ -38,13 +38,13 @@ bolt_holder_thickness = thickness*1.5;
 external_case_width = battery_width + thickness * 2 + (bolt_cut_replacement_radius*2) * 2^(1/2);
 external_case_length = battery_length + thickness * 2 + 2^(1/2) * (bolt_cut_replacement_radius*2);
 
-//
-complete_case_height = battery_height + padding_thickness*2 + thickness;
-
 
 bms_width = 20;
 bms_length = 15;
-bms_height = 5;
+bms_height = 10;
+
+complete_case_height = battery_height + padding_thickness*2 + bms_height + thickness;
+
 
 wire_diameter = 2;
 wire_hole_diameter = wire_diameter * 1.1;
@@ -118,7 +118,7 @@ module battery() {
     cube([battery_width, battery_length, battery_height], center = true);
     
 }
-//#battery();
+translate([0,0,battery_height/2])#battery();
 
 module bolt_cut(h, style) {
     //$fn = 6;
@@ -382,7 +382,7 @@ module styled_case(style){
 //Done
 difference(){
     translate([0, 0, complete_case_height*5/6]){
-        //styled_case("main");
+        styled_case("main");
         styled_case("lid");
         
     }
