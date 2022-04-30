@@ -57,6 +57,14 @@ vent_height = 20;
 
 corner_shift = rounding_radius;
 
+hole_radius = 2;
+hole_spacing = hole_radius * 3; 
+vent_grid_length = hole_spacing*4 + hole_radius*2;
+
+switch_length = 12.7;
+switch_width = 19.3;
+
+gromet_diameter = 8;
 
 /* Stuff to do:
 - Change battery height
@@ -189,20 +197,7 @@ module vents(case_height){
 }
 
 
-module hole_vents(case_height){
-    hole_radius = 2;
-    hole_spacing = hole_radius * 3; 
-    translate([0, 0, - case_height/2 + 0.5*thickness]){
-        for (y_postion = [0 : hole_spacing : 4 * hole_spacing]){
-            for (x_postion = [0 : hole_spacing : 4 * hole_spacing]){
-                translate([x_postion, y_postion, 0]){
-                    cylinder(thickness * fiddle/2, r = hole_radius, center = true);
-                
-                }   
-            }
-        }
-    } 
-}
+
 
 module build_corner(h, style){
     if (style == "main") {
@@ -242,6 +237,40 @@ module build_corners(h, style){
         
     }
 }
+
+module cable_hole(case_height){
+    cylinder(thickness * fiddle, d = gromet_diameter, center = true);
+    //We're using a gromet of outside radius 9.3mm
+}
+
+module hole_vents(case_height){
+    for (y_postion = [0 : hole_spacing : 4 * hole_spacing]){
+        for (x_postion = [0 : hole_spacing : 4 * hole_spacing]){
+            translate([x_postion, y_postion, 0]){
+                cylinder(thickness * fiddle/2, r = hole_radius, center = true);
+            
+            }   
+        }
+    }
+}
+
+module switch_hole() {
+    cube([switch_width,switch_length,thickness * fiddle], center = true);
+    
+}
+
+module lid_holes(case_height){
+    translate([hole_radius,hole_radius,0]){
+        hole_vents(case_height);
+        
+    }
+    translate([-external_case_width*1/4 + gromet_diameter/2, gromet_diameter/2,0]){
+        cable_hole(case_height);
+    }
+    translate([-external_case_width*1/4 + switch_width/2, vent_grid_length - switch_length/2,0]){
+        switch_hole();
+    }
+}
     
 module case(case_height, style) {
     /*difference() {
@@ -261,15 +290,12 @@ module case(case_height, style) {
             bolt_cut(case_height/2, style = "main_cutout");
             
         }
-        
         if (style == "lid"){
-            //vents(case_height); 
+            translate([0,-external_case_length/4,-case_height/2 + thickness/2])lid_holes();
+        }
+        else if (style == "main"){
+            //foo
             
-            //kludge, fix
-            translate([0,-5,0]){
-                hole_vents(case_height);
-                
-            }
         }
         build_four(external_case_width/2 - corner_shift, external_case_length/2 - corner_shift, -case_height/4){
             bolt_cut_replacement(case_height);
@@ -277,9 +303,6 @@ module case(case_height, style) {
         }
         
     }
-    
-    
-    
     build_corners(case_height, style);
         
 }
@@ -359,7 +382,7 @@ module styled_case(style){
 //Done
 difference(){
     translate([0, 0, complete_case_height*5/6]){
-        styled_case("main");
+        //styled_case("main");
         styled_case("lid");
         
     }
