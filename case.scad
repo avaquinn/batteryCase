@@ -119,14 +119,18 @@ module bolt_cut(h, style) {
         $fn = 6;
         cylinder(h/2, r = nut_radius, center = true);
     }
+    else if (style == "main_cutout"){
+        $fn = 6;
+        hull(){
+            cylinder(h/2, r = nut_radius, center = true);
+                translate([rounding_radius, rounding_radius, 0]){ 
+                    cylinder(h/2, r = rounding_radius, center = true);
+                }
+            }
+    }
     else if (style == "lid"){
         
         cylinder(h/2, r = washer_diameter/2, center = true);
-    }
-    else if (style == "main_cutout") {
-        $fn = 6;
-        cylinder(h/2, r = nut_radius*2, center = true);
-    
     }
     else {
         cylinder(h/2, r = nut_radius, center = true);
@@ -200,16 +204,12 @@ module hole_vents(case_height){
     } 
 }
 
-
 module build_corner(h, style){
     if (style == "main") {
         difference(){
             bolt_cut_replacement(h);
             translate([0,0,h/8])bolt_cut(h/2, style);
-            translate([rounding_radius, rounding_radius, h/16]){
-                rotate([0,0,45]) cube([rounding_radius*2, rounding_radius*2, h/8], center = true);
-            }
-            
+            bolt_cut(h/2, style = "main_cutout");
         }
     }
     else if (style == "lid"){
@@ -233,7 +233,6 @@ module build_corner(h, style){
             bolt_hole();
         }
     } 
-    //if (style == "main") {}
 }
 
 
@@ -258,6 +257,11 @@ module case(case_height, style) {
         case_shape(external_case_width - thickness*2, 
                    external_case_length - thickness*2, 
                    case_height - thickness*2);
+        build_four_rotate(external_case_width/2 - rounding_radius, external_case_length/2 - rounding_radius, -case_height/4){
+            bolt_cut(case_height/2, style = "main_cutout");
+            
+        }
+        
         if (style == "lid"){
             //vents(case_height); 
             
