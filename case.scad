@@ -123,6 +123,11 @@ module bolt_cut(h, style) {
         
         cylinder(h/2, r = washer_diameter/2, center = true);
     }
+    else if (style == "main_cutout") {
+        $fn = 6;
+        cylinder(h/2, r = nut_radius*2, center = true);
+    
+    }
     else {
         cylinder(h/2, r = nut_radius, center = true);
     }
@@ -204,7 +209,7 @@ module build_corner(h, style){
                 hull(){
                     bolt_cut(h/2, style);
                     translate([rounding_radius, rounding_radius, 0]){
-                        bolt_cut(h/2, style);
+                        bolt_cut(h/2, style = "main_cutout");
                     }
                 }
             }
