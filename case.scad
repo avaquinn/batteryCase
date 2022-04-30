@@ -1,4 +1,4 @@
-//CASE VERSION 7
+//CASE VERSION 8
 
 $fn = 60;
 
@@ -117,14 +117,14 @@ module bolt_cut(h, style) {
     //cylinder(cylinder_height , r = bolt_cut_radius);
     if (style == "main") {
         $fn = 6;
-        cylinder(h/2, r = nut_radius, center = true);
+        cylinder(h/4, r = nut_radius, center = true);
     }
     else if (style == "main_cutout"){
         $fn = 6;
         hull(){
-            cylinder(h/2, r = nut_radius, center = true);
+            cylinder(h/4, r = nut_radius, center = true);
                 translate([rounding_radius, rounding_radius, 0]){ 
-                    cylinder(h/2, r = rounding_radius, center = true);
+                    cylinder(h/4, r = rounding_radius, center = true);
                 }
             }
     }
@@ -208,8 +208,8 @@ module build_corner(h, style){
     if (style == "main") {
         difference(){
             bolt_cut_replacement(h);
-            translate([0,0,h/8])bolt_cut(h/2, style);
-            bolt_cut(h/2, style = "main_cutout");
+            translate([0,0,h*3/16])bolt_cut(h/2, style);
+            translate([0,0,h/8])bolt_cut(h/2, style = "main_cutout");
         }
     }
     else if (style == "lid"){
@@ -257,7 +257,7 @@ module case(case_height, style) {
         case_shape(external_case_width - thickness*2, 
                    external_case_length - thickness*2, 
                    case_height - thickness*2);
-        build_four_rotate(external_case_width/2 - rounding_radius, external_case_length/2 - rounding_radius, -case_height/4){
+        build_four_rotate(external_case_width/2 - rounding_radius, external_case_length/2 - rounding_radius, -case_height/8){
             bolt_cut(case_height/2, style = "main_cutout");
             
         }
@@ -329,7 +329,7 @@ module hexagons(){
 
 module styled_case(style){
     if (style == "main") {
-        case_height = complete_case_height * 2/3;  
+        case_height = complete_case_height * 2 *  5/6;  
         
         difference(){
             case_cleaned(case_height, style);
@@ -337,8 +337,8 @@ module styled_case(style){
         }
     }
     else if (style == "lid"){
-        case_height = complete_case_height * 1/3;
-        translate([0, external_case_width/1.6, -complete_case_height * 1/6])
+        case_height = complete_case_height * 2 * 1/6;
+        translate([0, external_case_width/1.6, -complete_case_height * 2/3])
         case_cleaned(case_height, style);
         
         /*
@@ -358,12 +358,12 @@ module styled_case(style){
 }
 //Done
 difference(){
-    translate([0, 0, complete_case_height/3]){
+    translate([0, 0, complete_case_height*5/6]){
         styled_case("main");
-    //styled_case("lid");
+        styled_case("lid");
         
     }
-    rotate([0,0,45]) translate([30,0,0]) cube(140, center = true);
+    //rotate([0,0,45]) translate([30,0,0]) cube(140, center = true);
 }
 
 //styled_case("pizza");
