@@ -1,5 +1,5 @@
-//CASE VERSION 9
-//version 9 printed at 220 in abs
+//CASE VERSION 10
+
 
 $fn = 60;
 
@@ -62,18 +62,17 @@ corner_shift = rounding_radius;
 
 hole_radius = 2;
 hole_spacing = hole_radius * 3; 
-vent_grid_length = hole_spacing*4 + hole_radius*2;
+vent_grid_length = hole_spacing*5 + hole_radius*2;
 
 switch_length = 12.7;
 switch_width = 19.3;
 
 gromet_diameter = 8;
 
-charge_port_diameter = 11;
+charge_port_diameter = 12;
 
 /* Stuff to do:
-- Change battery height
-- Spilt halves
+- hi
 
 */
 
@@ -255,8 +254,8 @@ module charge_port(case_height){
 
 
 module hole_vents(case_height){
-    for (y_postion = [0 : hole_spacing : 4 * hole_spacing]){
-        for (x_postion = [0 : hole_spacing : 4 * hole_spacing]){
+    for (y_postion = [0 : hole_spacing : 5 * hole_spacing]){
+        for (x_postion = [0 : hole_spacing : 5 * hole_spacing]){
             translate([x_postion, y_postion, 0]){
                 cylinder(thickness * fiddle/2, r = hole_radius, center = true);
             
@@ -270,10 +269,10 @@ module switch_hole() {
     
 }
 
-//translate([0,97,0])cube([external_case_width, external_case_length, 10], center = true);
+//translate([0,126,0])cube([external_case_width, external_case_length, 10], center = true);
 
 module lid_holes(case_height){
-    translate([external_case_width/6 + hole_radius, external_case_length/4 - vent_grid_length/2 + hole_radius,0]){
+    translate([external_case_width/8 + hole_radius, external_case_length/4 - vent_grid_length/2 + hole_radius,0]){
         hole_vents(case_height);
         
     }
@@ -284,7 +283,7 @@ module lid_holes(case_height){
         switch_hole();
         
     }
-    translate([-external_case_width*1/3 + switch_length + charge_port_diameter/2, external_case_length/4 - vent_grid_length/2 + charge_port_diameter/2, 0]){
+    translate([-external_case_width*1/3 + switch_length + charge_port_diameter, external_case_length/4 - vent_grid_length/2 + charge_port_diameter/2, 0]){
         charge_port(case_height);
     }
 }
