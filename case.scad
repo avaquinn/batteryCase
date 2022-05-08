@@ -1,12 +1,14 @@
-//CASE VERSION 8
+//CASE VERSION 9
 
-$fn = 60;
+$fn = 20;
 
 fiddle = 3;
 
 battery_width = 95.8;
 battery_height = 76.0;
 battery_length = 39.0;
+
+lid_increase_fiddle = 10;
 
 padding_thickness = 3;
 
@@ -66,6 +68,8 @@ switch_width = 19.3;
 
 gromet_diameter = 8;
 
+charge_port_diameter = 11;
+
 /* Stuff to do:
 - Change battery height
 - Spilt halves
@@ -118,7 +122,7 @@ module battery() {
     cube([battery_width, battery_length, battery_height], center = true);
     
 }
-translate([0,0,battery_height/2])#battery();
+//translate([0,0,battery_height/2])#battery();
 
 module bolt_cut(h, style) {
     //$fn = 6;
@@ -243,6 +247,12 @@ module cable_hole(case_height){
     //We're using a gromet of outside radius 9.3mm
 }
 
+module charge_port(case_height){
+    cylinder(thickness * fiddle, d = charge_port_diameter, center = true);
+    //We're using a gromet of outside radius 9.3mm
+}
+
+
 module hole_vents(case_height){
     for (y_postion = [0 : hole_spacing : 4 * hole_spacing]){
         for (x_postion = [0 : hole_spacing : 4 * hole_spacing]){
@@ -259,16 +269,22 @@ module switch_hole() {
     
 }
 
+//translate([0,97,0])cube([external_case_width, external_case_length, 10], center = true);
+
 module lid_holes(case_height){
-    translate([hole_radius,hole_radius,0]){
+    translate([external_case_width/6 + hole_radius, external_case_length/4 - vent_grid_length/2 + hole_radius,0]){
         hole_vents(case_height);
         
     }
-    translate([-external_case_width*1/4 + gromet_diameter/2, gromet_diameter/2,0]){
+    translate([-external_case_width*1/3 + gromet_diameter/2,external_case_length/4 - vent_grid_length/2 + gromet_diameter/2, 0]){
         cable_hole(case_height);
     }
-    translate([-external_case_width*1/4 + switch_width/2, vent_grid_length - switch_length/2,0]){
+    translate([-external_case_width*1/3 + switch_width/2, external_case_length/4 -switch_length/2 + vent_grid_length/2,0]){
         switch_hole();
+        
+    }
+    translate([-external_case_width*1/3 + switch_length + charge_port_diameter/2, external_case_length/4 - vent_grid_length/2 + charge_port_diameter/2, 0]){
+        charge_port(case_height);
     }
 }
     
@@ -360,7 +376,7 @@ module styled_case(style){
         }
     }
     else if (style == "lid"){
-        case_height = complete_case_height * 2 * 1/6;
+        case_height = complete_case_height * 2 * 1/6 + lid_increase_fiddle;
         translate([0, external_case_width/1.6, -complete_case_height * 2/3])
         case_cleaned(case_height, style);
         
@@ -382,7 +398,7 @@ module styled_case(style){
 //Done
 difference(){
     translate([0, 0, complete_case_height*5/6]){
-        styled_case("main");
+        //styled_case("main");
         styled_case("lid");
         
     }
