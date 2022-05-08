@@ -1,6 +1,7 @@
 //CASE VERSION 9
+//version 9 printed at 220 in abs
 
-$fn = 20;
+$fn = 60;
 
 fiddle = 3;
 
