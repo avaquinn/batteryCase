@@ -1,4 +1,5 @@
-//CASE VERSION 10
+//CASE VERSION 11
+//tall abs corner test print
 
 
 $fn = 60;
@@ -398,11 +399,11 @@ module styled_case(style){
 //Done
 difference(){
     translate([0, 0, complete_case_height*5/6]){
-        //styled_case("main");
-        styled_case("lid");
+        styled_case("main");
+        //styled_case("lid");
         
     }
-    //rotate([0,0,45]) translate([30,0,0]) cube(140, center = true);
+    rotate([0,0,45]) translate([30,0,0]) cube([140,140,200], center = true);
 }
 
 //styled_case("pizza");
