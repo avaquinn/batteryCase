@@ -1,5 +1,4 @@
-//CASE VERSION 11
-//tall abs corner test print
+//CASE VERSION 12
 
 
 $fn = 60;
@@ -288,7 +287,36 @@ module lid_holes(case_height){
         charge_port(case_height);
     }
 }
+
+module bridge_cylinder_length(case_height){
+    difference(){
+        translate([0,0,-case_height/2])rotate([90,0,0])cylinder(h = thickness, r = case_height/2, center = true);
+        translate([0,0,-case_height])cube([case_height, thickness*fiddle, case_height], center = true);
+    }
+}
+
+module bridge_cylinder_width(case_height){
+    difference(){
+        translate([0,0,-case_height/2])rotate([0,90,0])cylinder(h = thickness, r = case_height/2, center = true);
+        translate([0,0,-case_height])cube([thickness*fiddle, case_height, case_height], center = true);
+    }
+}
     
+module lid_bridges(case_height){
+    hull(){
+        translate([battery_width/2 - case_height/2,0,0])bridge_cylinder_length(case_height);
+        translate([-battery_width/2 + case_height/2,0,0])bridge_cylinder_length(case_height);
+   
+    }
+    hull(){
+        translate([0,battery_length/2 - case_height/2,0])bridge_cylinder_width(case_height);
+        translate([0,battery_length/2 - case_height/2,0])bridge_cylinder_width(case_height);
+   
+    }
+   //cube([battery_width, thickness, case_height], center = true);
+    
+}
+
 module case(case_height, style) {
     /*difference() {
         bolt_holders();
@@ -309,6 +337,7 @@ module case(case_height, style) {
         }
         if (style == "lid"){
             translate([0,-external_case_length/4,-case_height/2 + thickness/2])lid_holes();
+
         }
         else if (style == "main"){
             //foo
@@ -322,7 +351,12 @@ module case(case_height, style) {
     }
     build_corners(case_height, style);
         
+    if (style == "lid"){
+            lid_bridges(case_height);
+
+        }
 }
+
 
 module half_case(case_height, style) {
     delete_cube_side = battery_width*2;
@@ -381,6 +415,7 @@ module styled_case(style){
         translate([0, external_case_width/1.6, -complete_case_height * 2/3])
         case_cleaned(case_height, style);
         
+        
         /*
         Stuff to add:
         - wire cable hole
@@ -399,11 +434,11 @@ module styled_case(style){
 //Done
 difference(){
     translate([0, 0, complete_case_height*5/6]){
-        styled_case("main");
-        //styled_case("lid");
+        //styled_case("main");
+        styled_case("lid");
         
     }
-    rotate([0,0,45]) translate([30,0,0]) cube([140,140,200], center = true);
+    //rotate([0,0,45]) translate([30,0,0]) cube([140,140,200], center = true);
 }
 
 //styled_case("pizza");
