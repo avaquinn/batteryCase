@@ -290,30 +290,34 @@ module lid_holes(case_height){
 
 module bridge_cylinder_length(case_height){
     difference(){
-        translate([0,0,-case_height/2])rotate([90,0,0])cylinder(h = thickness, r = case_height/2, center = true);
+        translate([0,0,-case_height/4])rotate([90,0,0])cylinder(h = thickness, r = case_height/4, center = true);
         translate([0,0,-case_height])cube([case_height, thickness*fiddle, case_height], center = true);
     }
 }
 
 module bridge_cylinder_width(case_height){
     difference(){
-        translate([0,0,-case_height/2])rotate([0,90,0])cylinder(h = thickness, r = case_height/2, center = true);
+        translate([0,0,-case_height/4])rotate([0,90,0])cylinder(h = thickness, r = case_height/4, center = true);
         translate([0,0,-case_height])cube([thickness*fiddle, case_height, case_height], center = true);
     }
 }
     
 module lid_bridges(case_height){
+    
+    translate([0,0,-case_height*3/8])cube([battery_width, thickness, case_height/4], center = true);
     hull(){
-        translate([battery_width/2 - case_height/2,0,0])bridge_cylinder_length(case_height);
-        translate([-battery_width/2 + case_height/2,0,0])bridge_cylinder_length(case_height);
+        translate([battery_width/2 - case_height/4,0,0])bridge_cylinder_length(case_height);
+        translate([-battery_width/2 + case_height/4,0,0])bridge_cylinder_length(case_height);
    
     }
+    
+    translate([0,0,-case_height*3/8])cube([thickness, battery_length, case_height/4], center = true);
     hull(){
-        translate([0,battery_length/2 - case_height/2,0])bridge_cylinder_width(case_height);
-        translate([0,battery_length/2 - case_height/2,0])bridge_cylinder_width(case_height);
+        translate([0,battery_length/2 - case_height/4,0])bridge_cylinder_width(case_height);
+        translate([0,- battery_length/2 + case_height/4,0])bridge_cylinder_width(case_height);
    
     }
-   //cube([battery_width, thickness, case_height], center = true);
+   
     
 }
 
@@ -434,7 +438,7 @@ module styled_case(style){
 //Done
 difference(){
     translate([0, 0, complete_case_height*5/6]){
-        //styled_case("main");
+        styled_case("main");
         styled_case("lid");
         
     }
