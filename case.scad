@@ -1,4 +1,4 @@
-//CASE VERSION 12
+//CASE VERSION 13
 
 
 $fn = 60;
@@ -68,8 +68,10 @@ switch_length = 12.7;
 switch_width = 19.3;
 
 gromet_diameter = 8;
-
 charge_port_diameter = 12;
+switch_diameter = 21;
+
+case_support_radius = 2;
 
 /* Stuff to do:
 - hi
@@ -265,25 +267,29 @@ module hole_vents(case_height){
 }
 
 module switch_hole() {
-    cube([switch_width,switch_length,thickness * fiddle], center = true);
+    //cube([switch_width,switch_length,thickness * fiddle], center = true);
     
+    cylinder(thickness * fiddle, d = switch_diameter, center = true);
 }
 
 //translate([0,126,0])cube([external_case_width, external_case_length, 10], center = true);
 
+
 module lid_holes(case_height){
-    translate([external_case_width/8 + hole_radius, external_case_length/4 - vent_grid_length/2 + hole_radius,0]){
+    translate([battery_width/2 - vent_grid_length, -vent_grid_length/2 + hole_radius,thickness/2]){
         hole_vents(case_height);
-        
     }
-    translate([-external_case_width*1/3 + gromet_diameter/2,external_case_length/4 - vent_grid_length/2 + gromet_diameter/2, 0]){
+    /*translate([-battery_width/2 + gromet_diameter/2,-vent_grid_length/2+ gromet_diameter/2,0]){
         cable_hole(case_height);
-    }
-    translate([-external_case_width*1/3 + switch_width/2, external_case_length/4 -switch_length/2 + vent_grid_length/2,0]){
+    }*/
+    translate([-battery_width/2 + switch_diameter/2,vent_grid_length/2 -switch_diameter/2,0]){
         switch_hole();
         
     }
-    translate([-external_case_width*1/3 + switch_length + charge_port_diameter, external_case_length/4 - vent_grid_length/2 + charge_port_diameter/2, 0]){
+    translate([-battery_width*3/16 + charge_port_diameter/2,-vent_grid_length/2+ charge_port_diameter/2,0]){
+        charge_port(case_height);
+    }
+    translate([-battery_width*3/16 + charge_port_diameter/2,vent_grid_length/2 - charge_port_diameter/2,0]){
         charge_port(case_height);
     }
 }
@@ -304,10 +310,10 @@ module bridge_cylinder_width(case_height){
     
 module lid_bridges(case_height){
     
-    translate([0,0,-case_height*3/8])cube([battery_width, thickness, case_height/4], center = true);
+    translate([0,0,-case_height*3/8])cube([battery_width/2, thickness, case_height/4], center = true);
     hull(){
-        translate([battery_width/2 - case_height/4,0,0])bridge_cylinder_length(case_height);
-        translate([-battery_width/2 + case_height/4,0,0])bridge_cylinder_length(case_height);
+        translate([battery_width/4 - case_height/4,0,0])bridge_cylinder_length(case_height);
+        translate([-battery_width/4 + case_height/4,0,0])bridge_cylinder_length(case_height);
    
     }
     
@@ -320,6 +326,11 @@ module lid_bridges(case_height){
    
     
 }
+
+module case_supports(){
+    rotate([0,90,0])cylinder(h = external_case_width,r = case_support_radius, center = true);
+}
+
 
 module case(case_height, style) {
     /*difference() {
@@ -340,12 +351,11 @@ module case(case_height, style) {
             
         }
         if (style == "lid"){
-            translate([0,-external_case_length/4,-case_height/2 + thickness/2])lid_holes();
+            translate([0,0, -case_height/2])lid_holes();
 
         }
         else if (style == "main"){
             //foo
-            
         }
         build_four(external_case_width/2 - corner_shift, external_case_length/2 - corner_shift, -case_height/4){
             bolt_cut_replacement(case_height);
@@ -356,9 +366,22 @@ module case(case_height, style) {
     build_corners(case_height, style);
         
     if (style == "lid"){
-            lid_bridges(case_height);
-
-        }
+        lid_bridges(case_height);
+    }
+    else if (style == "main"){
+        
+        difference(){
+            for (z_postion=[1:3]){
+                translate([0,0,z_postion*case_height/8 - case_height/2]){
+                    translate([0,external_case_length/2 - case_support_radius,0])case_supports();
+                    translate([0,-external_case_length/2 + case_support_radius,0])case_supports();
+                }
+            }
+            build_four(external_case_width/2 - corner_shift, external_case_length/2 - corner_shift, -case_height/4){
+            bolt_cut_replacement(case_height);
+            }
+        } 
+    }
 }
 
 
@@ -416,17 +439,8 @@ module styled_case(style){
     }
     else if (style == "lid"){
         case_height = complete_case_height * 2 * 1/6 + lid_increase_fiddle;
-        translate([0, external_case_width/1.6, -complete_case_height * 2/3])
+        translate([0, 0*external_case_width/1.6, -complete_case_height * 2/3])
         case_cleaned(case_height, style);
-        
-        
-        /*
-        Stuff to add:
-        - wire cable hole
-        - switch cutout
-        - form fit for BMS
-        
-        */
         
     }
     else {
@@ -439,7 +453,7 @@ module styled_case(style){
 difference(){
     translate([0, 0, complete_case_height*5/6]){
         styled_case("main");
-        styled_case("lid");
+        //styled_case("lid");
         
     }
     //rotate([0,0,45]) translate([30,0,0]) cube([140,140,200], center = true);
